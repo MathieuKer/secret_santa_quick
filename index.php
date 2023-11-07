@@ -88,22 +88,22 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["generate"])) {
     // Création des nouvelles relations Secret Santa
     $numNames = count($names);
     for ($i = 0; $i < $numNames; $i++) {
-        $giver = $names[$i];
-        $receiver = $names[($i + 1) % $numNames]; // Assurez-vous qu'une personne ne s'offre pas un cadeau à elle-même
-        $sql_insert = "INSERT INTO relation_secret_santa (giver, receiver) VALUES ('$giver', '$receiver')";
+        $id_giver = $names[$i];
+        $id_receiver = $names[($i + 1) % $numNames]; // Assurez-vous qu'une personne ne s'offre pas un cadeau à elle-même
+        $sql_insert = "INSERT INTO relation_secret_santa (id_giver, id_receiver) VALUES ('$id_giver', '$id_receiver')";
         $conn->query($sql_insert);
     }
 }
 
 // Affichage du contenu de la table `relation_secret_santa`
-$sql_select_relation = "SELECT giver, receiver FROM relation_secret_santa";
+$sql_select_relation = "SELECT id_giver, id_receiver FROM relation_secret_santa";
 $result_relation = $conn->query($sql_select_relation);
 
 if ($result_relation->num_rows > 0) {
     echo "<h2>Relations Secret Santa :</h2>";
     echo "<ul>";
     while ($row = $result_relation->fetch_assoc()) {
-        echo "<li>" . $row["giver"] . " offre à " . $row["receiver"] . "</li>";
+        echo "<li>" . $row["id_giver"] . " offre à " . $row["id_receiver"] . "</li>";
     }
     echo "</ul>";
 } else {
