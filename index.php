@@ -45,6 +45,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && !empty($_POST["new_name"])) {
         $sql = "INSERT INTO personne (nom) VALUES ('$new_name')";
         $conn->query($sql);
     }
+
+    RandomizeNames($conn);
 }
 
 // Suppression d'un nom si le bouton "Supprimer" est cliqué
@@ -52,6 +54,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["delete_name"])) {
     $delete_name = $_POST["delete_name"];
     $sql_delete = "DELETE FROM personne WHERE nom = '$delete_name'";
     $conn->query($sql_delete);
+
+    RandomizeNames($conn);
 }
 
 // Récupération de tous les noms de la table `personne`
@@ -71,6 +75,10 @@ if ($result->num_rows > 0) {
 
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["generate"])) {
     // Suppression des données de la table `relation_secret_santa`
+    RandomizeNames($conn);
+}
+
+function RandomizeNames($conn){
     $sql_truncate = "TRUNCATE TABLE relation_secret_santa";
     $conn->query($sql_truncate);
 
