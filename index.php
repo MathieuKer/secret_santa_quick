@@ -1,3 +1,9 @@
+<?php
+    require_once 'conn1.php';
+    require_once 'constructor.php';
+
+?>
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -17,45 +23,64 @@
 </head>
 <body>
 
-<?php
-// Connexion à la base de données
-$servername = "localhost";
-$username = "root";
-$password = "";
-$dbname = "secret_santa";
+<h2>Ajouter une Famille :</h2>
+<form method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>">
+    <input type="text" name="new_family" placeholder="Entrez une famille" required>
+    <input type="submit" value="Ajouter">
+</form>
 
-$conn = new mysqli($servername, $username, $password, $dbname);
+<h2>Ajouter un Nom :</h2>
+<form method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>">
+    <input type="text" name="new_name" placeholder="Entrez un nom" required>
+    
+    <!-- Ajout de la dropdownlist pour sélectionner une famille -->
+    <select name="selected_family" required>
+        <option value="" disabled selected>Choisissez une famille</option>
+        <?php
+            // Récupération de toutes les familles de la table `famille`
+            $sql_select_families = "SELECT id_famille, nom_famille FROM famille";
+            $result_families = $conn->query($sql_select_families);
 
-if ($conn->connect_error) {
-    die("La connexion a échoué : " . $conn->connect_error);
-}
+            while ($row_family = $result_families->fetch_assoc()) {
+                echo "<option value='" . $row_family["id_famille"] . "'>" . $row_family["nom_famille"] . "</option>";
+            }
+        ?>
+    </select>
 
-if ($_SERVER["REQUEST_METHOD"] == "POST" && !empty($_POST["new_name"])) {
-    // Récupération du nom entré dans le formulaire
-    $new_name = $_POST["new_name"];
+    <?php
+    // Vérifier si des familles existent avant d'afficher le bouton "Ajouter un Nom"
+    $sql_check_families = "SELECT COUNT(*) as count FROM famille";
+    $result_check_families = $conn->query($sql_check_families);
+    $row_check_families = $result_check_families->fetch_assoc();
+    $count_families = $row_check_families['count'];
 
-    // Vérifier si le nom n'existe pas déjà
-    $sql_check = "SELECT COUNT(*) as count FROM personne WHERE nom = '$new_name'";
-    $result = $conn->query($sql_check);
-    $row = $result->fetch_assoc();
-    $count = $row['count'];
-
-    if ($count == 0) {
-        // Insertion du nouveau nom dans la table `personne`
-        $sql = "INSERT INTO personne (nom) VALUES ('$new_name')";
-        $conn->query($sql);
+    if ($count_families > 0) {
+        echo '<input type="submit" value="Ajouter">';
+    } else {
+        echo '<input type="submit" value="Ajouter" disabled>';
     }
+    ?>
+</form>
 
-    RandomizeNames($conn);
-}
+<form method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>">
+    <input type="submit" name="generate" value="Générer">
+</form>
 
-// Suppression d'un nom si le bouton "Supprimer" est cliqué
-if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["delete_name"])) {
-    $delete_name = $_POST["delete_name"];
-    $sql_delete = "DELETE FROM personne WHERE nom = '$delete_name'";
-    $conn->query($sql_delete);
+<?php
 
-    RandomizeNames($conn);
+// Récupération de toutes les familles de la table `famille`
+$sql_select = "SELECT nom_famille FROM famille";
+$result = $conn->query($sql_select);
+
+if ($result->num_rows > 0) {
+    echo "<h2>Liste des Familles :</h2>";
+    echo "<ul>";
+    while ($row = $result->fetch_assoc()) {
+        echo "<li>" . $row["nom_famille"] . " <form method='post' action='".htmlspecialchars($_SERVER["PHP_SELF"])."' style='display:inline'><input type='hidden' name='delete_family' value='" . $row["nom_famille"] . "'><input type='submit' value='Supprimer'></form></li>";
+    }
+    echo "</ul>";
+} else {
+    echo "Aucune famille pour le moment.";
 }
 
 // Récupération de tous les noms de la table `personne`
@@ -73,35 +98,30 @@ if ($result->num_rows > 0) {
     echo "Aucun nom pour le moment.";
 }
 
-if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["generate"])) {
-    // Suppression des données de la table `relation_secret_santa`
-    RandomizeNames($conn);
-}
 
-function RandomizeNames($conn){
-    $sql_truncate = "TRUNCATE TABLE relation_secret_santa";
-    $conn->query($sql_truncate);
+// Récupération de toutes les familles de la table `famille`
+$sql_select_families = "SELECT id_famille, nom_famille FROM famille";
+$result_families = $conn->query($sql_select_families);
 
-    // Récupération de tous les noms de la table `personne`
-    $sql_select = "SELECT nom FROM personne";
-    $result = $conn->query($sql_select);
+while ($row_family = $result_families->fetch_assoc()) {
+    echo "<h2>Liste des Noms pour la famille '" . $row_family["nom_famille"] . "':</h2>";
 
-    $names = [];
-    while ($row = $result->fetch_assoc()) {
-        $names[] = $row["nom"];
-    }
+    // Récupération des noms associés à la famille
+    $sql_select_names = "SELECT nom FROM personne WHERE id_famille = '" . $row_family["id_famille"] . "'";
+    $result_names = $conn->query($sql_select_names);
 
-    shuffle($names);
-
-    // Création des nouvelles relations Secret Santa
-    $numNames = count($names);
-    for ($i = 0; $i < $numNames; $i++) {
-        $id_giver = $names[$i];
-        $id_receiver = $names[($i + 1) % $numNames]; // Assurez-vous qu'une personne ne s'offre pas un cadeau à elle-même
-        $sql_insert = "INSERT INTO relation_secret_santa (id_giver, id_receiver) VALUES ('$id_giver', '$id_receiver')";
-        $conn->query($sql_insert);
+    if ($result_names->num_rows > 0) {
+        echo "<ul>";
+        while ($row_name = $result_names->fetch_assoc()) {
+            echo "<li>" . $row_name["nom"] . "</li>";
+        }
+        echo "</ul>";
+    } else {
+        echo "Aucun nom pour le moment.";
     }
 }
+
+
 
 // Affichage du contenu de la table `relation_secret_santa`
 $sql_select_relation = "SELECT id_giver, id_receiver FROM relation_secret_santa";
@@ -120,16 +140,6 @@ if ($result_relation->num_rows > 0) {
 
 $conn->close();
 ?>
-
-<h2>Ajouter un Nom :</h2>
-<form method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>">
-    <input type="text" name="new_name" placeholder="Entrez un nom" required>
-    <input type="submit" value="Ajouter">
-</form>
-
-<form method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>">
-    <input type="submit" name="generate" value="Générer">
-</form>
 
 </body>
 </html>
