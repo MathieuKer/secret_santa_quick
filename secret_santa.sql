@@ -32,7 +32,7 @@ CREATE TABLE IF NOT EXISTS `famille` (
   `id_famille` int NOT NULL AUTO_INCREMENT,
   `nom_famille` varchar(50) NOT NULL,
   PRIMARY KEY (`id_famille`)
-) ENGINE=MyISAM AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -47,7 +47,7 @@ CREATE TABLE IF NOT EXISTS `personne` (
   `id_famille` int DEFAULT NULL,
   PRIMARY KEY (`id_personne`),
   KEY `id_famille` (`id_famille`)
-) ENGINE=MyISAM AUTO_INCREMENT=18 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=18 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Déchargement des données de la table `personne`
@@ -68,12 +68,12 @@ INSERT INTO `personne` (`id_personne`, `nom`, `id_famille`) VALUES
 DROP TABLE IF EXISTS `relation_secret_santa`;
 CREATE TABLE IF NOT EXISTS `relation_secret_santa` (
   `id_relation` int NOT NULL AUTO_INCREMENT,
-  `id_giver` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `id_giver` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `id_receiver` varchar(100) DEFAULT NULL,
   PRIMARY KEY (`id_relation`),
   UNIQUE KEY `id_giver` (`id_giver`,`id_receiver`),
   KEY `id_receiver` (`id_receiver`)
-) ENGINE=MyISAM AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Déchargement des données de la table `relation_secret_santa`
