@@ -8,18 +8,8 @@
 <html>
 <head>
     <title>Secret Santa - Gestion des Noms</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-        }
-        form {
-            margin-bottom: 20px;
-        }
-        ul {
-            list-style: none;
-            padding: 0;
-        }
-    </style>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous"> 
+    <link rel="stylesheet" type="text/css" href="chemin/vers/style.css">
 </head>
 <body>
 
@@ -68,43 +58,19 @@
 
 <?php
 
-// Récupération de toutes les familles de la table `famille`
-$sql_select = "SELECT nom_famille FROM famille";
-$result = $conn->query($sql_select);
-
-if ($result->num_rows > 0) {
-    echo "<h2>Liste des Familles :</h2>";
-    echo "<ul>";
-    while ($row = $result->fetch_assoc()) {
-        echo "<li>" . $row["nom_famille"] . " <form method='post' action='".htmlspecialchars($_SERVER["PHP_SELF"])."' style='display:inline'><input type='hidden' name='delete_family' value='" . $row["nom_famille"] . "'><input type='submit' value='Supprimer'></form></li>";
-    }
-    echo "</ul>";
-} else {
-    echo "Aucune famille pour le moment.";
-}
-
-// Récupération de tous les noms de la table `personne`
-$sql_select = "SELECT nom FROM personne";
-$result = $conn->query($sql_select);
-
-if ($result->num_rows > 0) {
-    echo "<h2>Liste des Noms :</h2>";
-    echo "<ul>";
-    while ($row = $result->fetch_assoc()) {
-        echo "<li>" . $row["nom"] . " <form method='post' action='".htmlspecialchars($_SERVER["PHP_SELF"])."' style='display:inline'><input type='hidden' name='delete_name' value='" . $row["nom"] . "'><input type='submit' value='Supprimer'></form></li>";
-    }
-    echo "</ul>";
-} else {
-    echo "Aucun nom pour le moment.";
-}
-
 
 // Récupération de toutes les familles de la table `famille`
 $sql_select_families = "SELECT id_famille, nom_famille FROM famille";
 $result_families = $conn->query($sql_select_families);
 
+?>
+<div class="container">
+  <div class="row">
+<?php
+
 while ($row_family = $result_families->fetch_assoc()) {
-    echo "<h2>Liste des Noms pour la famille '" . $row_family["nom_famille"] . "':</h2>";
+    echo "<div class=\"col\">";
+    echo "<h2>" . $row_family["nom_famille"] . " <form method='post' action='".htmlspecialchars($_SERVER["PHP_SELF"])."' style='display:inline'><input type='hidden' name='delete_family' value='" . $row_family["nom_famille"] . "'><input type='submit' value='X'></form></h2>";
 
     // Récupération des noms associés à la famille
     $sql_select_names = "SELECT nom FROM personne WHERE id_famille = '" . $row_family["id_famille"] . "'";
@@ -113,13 +79,19 @@ while ($row_family = $result_families->fetch_assoc()) {
     if ($result_names->num_rows > 0) {
         echo "<ul>";
         while ($row_name = $result_names->fetch_assoc()) {
-            echo "<li>" . $row_name["nom"] . "</li>";
+            echo "<li>" . $row_name["nom"] . "<form method='post' action='".htmlspecialchars($_SERVER["PHP_SELF"])."' style='display:inline'><input type='hidden' name='delete_name' value='" . $row_name["nom"] . "'><input type='submit' value='X'></form></li>";
         }
         echo "</ul>";
     } else {
         echo "Aucun nom pour le moment.";
     }
+    echo "</div>";
 }
+
+?>
+    </div>
+</div>
+<?php
 
 
 
