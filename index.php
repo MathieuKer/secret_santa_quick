@@ -106,9 +106,7 @@ if ($result_relation->num_rows > 0) {
         echo "<li>" . $row["id_giver"] . " offre à " . $row["id_receiver"] . "</li>";
     }
     echo "</ul>";
-} else {
-    echo "Aucune relation pour le moment.";
-}
+} 
 
 $conn->close();
 ?>

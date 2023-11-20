@@ -1,6 +1,6 @@
 <?php
 
-function RandomizeNames($conn){
+function RandomizeNames_old($conn){
     $sql_truncate = "TRUNCATE TABLE relation_secret_santa";
     $conn->query($sql_truncate);
 
@@ -25,6 +25,44 @@ function RandomizeNames($conn){
     }
 }
 
+
+function RandomizeNames($conn){
+    try {
+        // Suppression des anciennes relations Secret Santa
+        $sql_truncate = "TRUNCATE TABLE relation_secret_santa";
+        $conn->query($sql_truncate);
+
+        // Récupération de tous les noms et familles de la table `personne`
+        $sql_select = "SELECT nom, id_famille FROM personne";
+        $result = $conn->query($sql_select);
+
+        if ($result === false) {
+            throw new Exception("Erreur lors de la récupération des noms et familles : " . $conn->error);
+        }
+
+        $namesByFamily = [];
+        while ($row = $result->fetch_assoc()) {
+            $family = $row["id_famille"];
+            $name = $row["nom"];
+            $namesByFamily[$family][] = $name;
+        }
+
+            // Affichage de tous les noms par famille
+        foreach ($namesByFamily as $family => $familyNames) {
+            echo "Famille '$family':<br>";
+            foreach ($familyNames as $name) {
+                echo "- $name<br>";
+            }
+            echo "<br>";
+        }
+
+        echo "Les relations Secret Santa ont été générées avec succès.";
+    } catch (Exception $e) {
+        echo "Erreur : " . $e->getMessage();
+    }
+}
+
+
 function supprimerFamilleEtUtilisateursParNom($nomFamille, $conn) {
     // Rechercher l'ID de la famille par le nom
     $sql_select_id_famille = "SELECT id_famille FROM famille WHERE nom_famille = '$nomFamille'";
@@ -37,7 +75,6 @@ function supprimerFamilleEtUtilisateursParNom($nomFamille, $conn) {
         // Supprimer tous les utilisateurs associés à la famille
         $sql_supprimer_utilisateurs = "DELETE FROM personne WHERE id_famille = '$idFamille'";
         if ($conn->query($sql_supprimer_utilisateurs) === TRUE) {
-            echo "Utilisateurs supprimés avec succès.";
         } else {
             echo "Erreur lors de la suppression des utilisateurs : " . $conn->error;
             return false; // Indique une erreur
@@ -46,7 +83,6 @@ function supprimerFamilleEtUtilisateursParNom($nomFamille, $conn) {
         // Supprimer la famille
         $sql_supprimer_famille = "DELETE FROM famille WHERE id_famille = '$idFamille'";
         if ($conn->query($sql_supprimer_famille) === TRUE) {
-            echo "Famille supprimée avec succès.";
             return true; // Indique le succès
         } else {
             echo "Erreur lors de la suppression de la famille : " . $conn->error;
@@ -58,13 +94,16 @@ function supprimerFamilleEtUtilisateursParNom($nomFamille, $conn) {
     }
 }
 
-// Suppression d'un nom si le bouton "Supprimer" est cliqué
-if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["delete_name"])) {
-    $delete_name = $_POST["delete_name"];
-    $sql_delete = "DELETE FROM personne WHERE nom = '$delete_name'";
-    $conn->query($sql_delete);
-
-    RandomizeNames($conn);
+// Fonction pour supprimer un nom
+function supprimerNom($conn, $nom) {
+    $sql_delete = "DELETE FROM personne WHERE nom = '$nom'";
+    if ($conn->query($sql_delete) === TRUE) {
+        echo "Nom '$nom' supprimé avec succès.";
+        return true;
+    } else {
+        echo "Erreur lors de la suppression du nom : " . $conn->error;
+        return false;
+    }
 }
 
 // Fonction pour associer un nouveau nom à une famille
@@ -79,7 +118,6 @@ function associerNomAFamille($conn, $new_name, $selected_family) {
         // Insertion du nouveau nom avec l'id de la famille dans la table `personne`
         $sql = "INSERT INTO personne (nom, id_famille) VALUES ('$new_name', '$selected_family')";
         if ($conn->query($sql) === TRUE) {
-            echo "Nom '$new_name' associé à la famille avec succès.";
             return true;
         } else {
             echo "Erreur lors de l'association du nom à la famille : " . $conn->error;
@@ -103,7 +141,6 @@ function ajouterNouvelleFamille($conn, $new_family) {
         // Insertion de la nouvelle famille dans la table `famille`
         $sql = "INSERT INTO famille (nom_famille) VALUES ('$new_family')";
         if ($conn->query($sql) === TRUE) {
-            echo "Famille '$new_family' ajoutée avec succès.";
             return true;
         } else {
             echo "Erreur lors de l'ajout de la famille : " . $conn->error;

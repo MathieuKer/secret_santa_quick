@@ -17,7 +17,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && !empty($_POST["new_family"])) {
 
 // Suppression d'un nom si le bouton "Supprimer" est cliqué
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["delete_name"])) { 
-    supprimerNom($conn, $delete_name);
+    supprimerNom($conn, $_POST["delete_name"]);
     RandomizeNames($conn);
 }
 
