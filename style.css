@@ -1,0 +1,44 @@
+body {
+    background-image: url('https://marketplace.canva.com/EAEvYTSUfvA/1/0/1600w/canva-pink-and-green-artsy-feminine-merry-christmas-desktop-wallpaper-vbZWFPGS_rI.jpg'); /* Replace 'path/to/your/image.jpg' with the actual path to your image */
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-attachment: fixed; /* Ensures the background image remains fixed as the user scrolls */
+    background-position: center center;
+}
+h2 {
+    color: #d9534f;
+}
+.col {
+    margin-bottom: 20px;
+}
+button[name="send_mail"] {
+    background-color: #5bc0de;
+    color: #fff;
+}
+
+.delete-button {
+    background-color: #d9534f;
+    color: #fff;
+    border: none;
+    padding: 3px 6px; /* Adjusted padding */
+    cursor: pointer;
+    font-size: 12px; /* Adjusted font size */
+}
+
+.delete-button:hover {
+    background-color: #c9302c;
+}
+
+.send-mail-button {
+    background-color: #28a745; /* Green color for Christmas theme */
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-size: 16px;
+    border-radius: 5px; /* Rounded corners for a softer look */
+}
+
+.send-mail-button:hover {
+    background-color: #218838; /* Darker green on hover */
+}

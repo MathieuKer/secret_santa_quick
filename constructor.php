@@ -4,8 +4,8 @@ require_once 'functions.php';
 
 
 // Ajout d'un nom dans une famille existante si le bouton "Ajouter" est cliqué
-if ($_SERVER["REQUEST_METHOD"] == "POST" && !empty($_POST["new_name"]) && isset($_POST["selected_family"])) {   
-    associerNomAFamille($conn, $_POST["new_name"], $_POST["selected_family"]);
+if ($_SERVER["REQUEST_METHOD"] == "POST" && !empty($_POST["new_name"]) && !empty($_POST["new_email"]) && isset($_POST["selected_family"])) {   
+    associerNomMailAFamille($conn, $_POST["new_name"], $_POST["new_email"], $_POST["selected_family"]);
     RandomizeNames($conn);
 }
 
@@ -29,6 +29,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["delete_family"])) {
 
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["generate"])) {
     RandomizeNames($conn);
+}
+
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["send_mail"])) {
+    sendMails($conn);
 }
 
 ?>
