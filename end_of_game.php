@@ -19,8 +19,8 @@
     </style>
 </head>
 <body>
-    <h2>Merci d'avoir participé à notre jeu de Secret Santa!</h2>
-    <p>Nous apprécions votre engagement et espérons que vous passez de joyeuses fêtes!</p>
+    <h2>Merci d'avoir participé au jeu de Secret Santa!</h2>
+    <p>Votre Mathieu préféré vous souhaite de joyeuses fêtes</p>
     <!-- You can add more content or links here as needed -->
 </body>
 </html>

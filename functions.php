@@ -178,28 +178,41 @@ function sendMails($conn){
     $mail = new PHPMailer(true);
 
     try {
-        // Paramètres du serveur SMTP
-        $mail->isSMTP();
-        $mail->Host = 'smtp.smtp2go.com';
-        $mail->SMTPAuth = true;
-        $mail->Username = 'secret-santa.com';
-        $mail->Password = 'Not24get';
-        $mail->SMTPSecure = 'tls';
-        $mail->Port = 587;
-        $mail->SMTPDebug = 2;
-    
-        // Destinataire, sujet, corps du message, etc.
-        $mail->setFrom('mathieu.kero@gmail.com', 'Mathieu');
-        $mail->addAddress('mkeromnes@techso.com', 'Mathieu');
-        $mail->Subject = 'Sujet de l\'e-mail';
-        $mail->Body = 'Contenu de l\'e-mail';
-    
-        // Envoi de l'e-mail
-        $mail->send();
-        echo 'L\'e-mail a été envoyé avec succès.';
 
-        header("Location: end_of_game.html");
-        exit;
+    
+        // Récupération des relations Secret Santa
+        $sql_select_relations = "SELECT rs.id_giver, rs.id_receiver, p_giver.email AS giver_email
+                                 FROM relation_secret_santa rs
+                                 JOIN personne p_giver ON rs.id_giver = p_giver.nom";
+        $result_relations = $conn->query($sql_select_relations);
+
+        while ($row_relation = $result_relations->fetch_assoc()) {
+            // Paramètres du serveur SMTP
+            $mail->isSMTP();
+            $mail->Host = 'smtp.smtp2go.com';
+            $mail->SMTPAuth = true;
+            $mail->Username = 'secret-santa.com';
+            $mail->Password = 'Not24get';
+            $mail->SMTPSecure = 'tls';
+            $mail->Port = 587;
+            //$mail->SMTPDebug = 2;
+
+            $giver_name = $row_relation["id_giver"];
+            $receiver_name = $row_relation["id_receiver"];
+            $giver_email = $row_relation["giver_email"];
+
+            // Destinataire, sujet, corps du message, etc.
+            $mail->setFrom('mathieu.kero@gmail.com', 'Mathieu');
+            $mail->addAddress($giver_email, $giver_name);
+            $mail->Subject = 'Secret Santa Assignement';
+            $mail->Body = "Cher $giver_name,\n\nTu es le Secret Santa de $receiver_name! Joyeuses fêtes!";
+    
+            // Envoi de l'e-mail
+            $mail->send();
+        }
+
+        //header("Location: end_of_game.php");
+        //exit;
     } catch (Exception $e) {
         echo 'Erreur lors de l\'envoi de l\'e-mail : ', $mail->ErrorInfo;
     }
