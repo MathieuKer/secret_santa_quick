@@ -112,17 +112,50 @@
 
     </div>
 </div>
-<?php
-
-    $conn->close();
-
-?>
 
 <div class="container text-center mt-3">
     <form method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" onsubmit="return confirmSendMail();">
         <button type="submit" name="send_mail" class="send-mail-button">Envoyer les mails !</button>
     </form>
 </div>
+
+<?php
+
+// Ton code RandomizeNames ici...
+
+// Afficher les relations Secret Santa dans une liste HTML
+try {
+    // Sélectionner les relations Secret Santa
+    $sql_select_relations = "SELECT id_giver, id_receiver FROM relation_secret_santa";
+    $result_relations = $conn->query($sql_select_relations);
+
+    if ($result_relations === false) {
+        throw new Exception("Erreur lors de la récupération des relations Secret Santa : " . $conn->error);
+    }
+
+    // Créer une liste HTML
+    echo '<ul>';
+
+    while ($row_relation = $result_relations->fetch_assoc()) {
+        $giver = $row_relation["id_giver"];
+        $receiver = $row_relation["id_receiver"];
+
+        // Afficher chaque relation dans un élément de liste
+        echo '<li>' . $giver . ' offre un cadeau à ' . $receiver . '</li>';
+    }
+
+    echo '</ul>';
+} catch (Exception $e) {
+    echo "Erreur : " . $e->getMessage();
+}
+
+?>
+
+<?php
+
+    $conn->close();
+
+?>
 
 </body>
 </html>
